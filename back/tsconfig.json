@@ -1,10 +1,19 @@
 {
-    "compilerOptions": {
-      "target": "es2016",
-      "module": "commonjs",
-      "outDir": "./dist",
-      "strict": true,
-      "esModuleInterop": true,
-      "inlineSourceMap": true
-    }
+  "compilerOptions": {
+    "target": "es2016",
+    "lib": ["es2016", "esnext.asynciterable", "dom", "es2019"],
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": false,
+    "outDir": "dist",
+    "types": ["node"]
+    //"noUnusedLocals": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

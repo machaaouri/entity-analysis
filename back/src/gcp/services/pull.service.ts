@@ -2,18 +2,23 @@ import debug from "debug";
 
 import { PubSub } from "@google-cloud/pubsub";
 import { CustomError } from "../types";
-import { config } from "dotenv";
 import { Memory } from "./memory.service";
 import { Firebase } from "./firebase.db";
-config();
+import { config } from "../../config";
+const {
+  GOOGLE_PROJECT_ID,
+  PUBSUB_TOPIC_NAME_OUTPUT,
+  PUBSUB_SUBSCRIPTION_NAME,
+} = config;
+
 const log: debug.IDebugger = debug("app:pubsub-service");
 
 export class PullClient {
   private static instance: PullClient;
   private pubsub: PubSub;
-  projectId = process.env.GOOGLE_PROJECT_ID;
-  topicName = process.env.PUBSUB_TOPIC_NAME_OUTPUT || "";
-  subscriptionName = process.env.PUBSUB_SUBSCRIPTION_NAME || "";
+  projectId = GOOGLE_PROJECT_ID;
+  topicName = PUBSUB_TOPIC_NAME_OUTPUT;
+  subscriptionName = PUBSUB_SUBSCRIPTION_NAME;
 
   constructor() {
     this.pubsub = new PubSub({ projectId: this.projectId });

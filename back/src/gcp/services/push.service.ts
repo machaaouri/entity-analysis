@@ -7,16 +7,18 @@ import {
   TopicMetadata,
 } from "@google-cloud/pubsub";
 import { CustomError } from "../types";
-import { config } from "dotenv";
 import { Memory } from "./memory.service";
-config();
+// Config
+import { config } from "../../config";
+const { GOOGLE_PROJECT_ID, PUBSUB_TOPIC_NAME_INPUT } = config;
+
 const log: debug.IDebugger = debug("app:pubsub-service");
 
 export class PushClient {
   private static instance: PushClient;
   private pubsub: PubSub;
-  projectId = process.env.GOOGLE_PROJECT_ID;
-  topicName = process.env.PUBSUB_TOPIC_NAME_INPUT || "analyzer_input";
+  projectId = GOOGLE_PROJECT_ID;
+  topicName = PUBSUB_TOPIC_NAME_INPUT;
 
   constructor() {
     this.pubsub = new PubSub({ projectId: this.projectId });

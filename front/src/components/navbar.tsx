@@ -4,15 +4,9 @@ import { Link, useHistory } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../contexts/authContext";
 
-export const NavBar = () => {
-  const { signOut, currentUser } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
+export const NavBar = (p: { isAdmin: boolean }) => {
+  const { signOut } = useAuth();
   const history = useHistory();
-  const remote = api(currentUser);
-
-  useEffect(() => {
-    remote.isAdmin<{ isAdmin: boolean }>().then((v) => setIsAdmin(v.isAdmin));
-  }, [currentUser?.email]);
 
   async function handleSignOut() {
     try {
@@ -31,7 +25,7 @@ export const NavBar = () => {
           <Link to="/">Native cloud app</Link>
         </div>
         <div className="d-flex align-items-center">
-          {isAdmin && <Link to="/Admin">Admin</Link>}
+          {p.isAdmin && <Link to="/Admin">Admin</Link>}
           <Button variant="link" onClick={handleSignOut}>
             Sign Out
           </Button>

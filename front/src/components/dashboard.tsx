@@ -8,7 +8,7 @@ import {
   initGoogleTextAnalyser,
   ServiceType,
 } from "../types/types";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core";
 import { AnalysisRenderer } from "./analysis";
 
@@ -35,6 +35,7 @@ const useStyles = makeStyles({
 
 export const Dashboard = () => {
   const { currentUser } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [state, setState] = useState<GoogleTextAnalyser>(
     initGoogleTextAnalyser()
   );
@@ -43,6 +44,13 @@ export const Dashboard = () => {
   const classes = useStyles();
   const remote = api(currentUser);
   const onGoing = useRef(false);
+
+  useEffect(() => {
+    remote
+      .isAdmin<{ isAdmin: boolean }>()
+      .then((v) => setIsAdmin(v.isAdmin))
+      .catch((err) => setError(err.message));
+  }, [currentUser?.email]);
 
   async function analyze(text: string) {
     if (onGoing.current) {
@@ -102,7 +110,7 @@ export const Dashboard = () => {
 
   return (
     <div className={classes.root}>
-      <NavBar />
+      <NavBar isAdmin={isAdmin} />
       {error && <div className="alert alert-danger text-center">{error}</div>}
       {warning && (
         <div className="alert alert-warning text-center">{warning}</div>

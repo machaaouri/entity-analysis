@@ -38,22 +38,17 @@ export const Admin = () => {
   const [error, setError] = useState<string>();
   const classes = useStyles();
 
-  function createData(user: User) {
-    return { uid: user.uid };
-  }
-
   useEffect(() => {
-    remote
-      .admin<AdminResponse>()
-      .then((v) => {
-        setAdmin(v);
-      })
-      .catch((err) => setError("An error has occurred !"));
+    try {
+      remote.admin<AdminResponse>().then((v) => setAdmin(v));
+    } catch (err) {
+      setError("An error has occurred !");
+    }
   }, []);
 
   return (
     <div className={classes.root}>
-      <NavBar />
+      <NavBar isAdmin={true} />
       {error && <div className="alert alert-danger text-center">{error}</div>}
       <div className={classes.container}>
         <TableContainer component={Paper}>

@@ -1,8 +1,9 @@
 import admin from "firebase-admin";
-
-const key = process.env.FIREBASE_KEY || "";
+// Config
+import { config } from "../../config";
+const { FIREBASE_KEY } = config;
 admin.initializeApp({
-  credential: admin.credential.cert(key),
+  credential: admin.credential.cert(FIREBASE_KEY),
 });
 
 export default admin;
