@@ -1,7 +1,8 @@
+import { Config } from "./config";
 import { FirebaseUser } from "./firebase";
-
+const { REACT_APP_BACKEND } = Config;
 export const api = (user: FirebaseUser | null) => {
-  const base_url = process.env.REACT_APP_BACKEND;
+  const base_url = REACT_APP_BACKEND;
 
   const validateResponse = (response: any) => {
     if (!response.ok) throw Error(response.statusText);

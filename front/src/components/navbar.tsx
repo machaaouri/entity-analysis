@@ -1,36 +1,82 @@
+import {
+  AppBar,
+  Button,
+  createStyles,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Theme,
+  Toolbar,
+  IconButton,
+  Typography,
+} from "@material-ui/core";
+import { AccountCircle } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
-import { api } from "../api";
 import { useAuth } from "../contexts/authContext";
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    toolbar: {
+      display: "flex",
+      justifyContent: "space-between",
+    },
+  })
+);
+
 export const NavBar = (p: { isAdmin: boolean }) => {
+  const classes = useStyles();
   const { signOut } = useAuth();
   const history = useHistory();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   async function handleSignOut() {
     try {
       await signOut();
-      history.push("/login");
+      history.push("/signin");
     } catch {}
   }
 
   return (
-    <nav
-      className="navbar navbar-light bg-light shadow-sm rounded"
-      style={{ width: "100%" }}
-    >
-      <div className="container-fluid">
-        <div className="navbar-header">
-          <Link to="/">Native cloud app</Link>
+    <AppBar position="static">
+      <Toolbar className={classes.toolbar}>
+        <MenuItem component={Link} to={"/"}>
+          <Typography variant="h6">Home</Typography>
+        </MenuItem>
+        <div>
+          <IconButton
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+            color="inherit"
+          >
+            <AccountCircle />
+          </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={open}
+            onClose={() => setAnchorEl(null)}
+          >
+            {p.isAdmin && (
+              <MenuItem component={Link} to={"/Admin"}>
+                Admin
+              </MenuItem>
+            )}
+            <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
+          </Menu>
         </div>
-        <div className="d-flex align-items-center">
-          {p.isAdmin && <Link to="/Admin">Admin</Link>}
-          <Button variant="link" onClick={handleSignOut}>
-            Sign Out
-          </Button>
-        </div>
-      </div>
-    </nav>
+      </Toolbar>
+    </AppBar>
   );
 };

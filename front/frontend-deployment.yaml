@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-pod
+  template:
+    metadata:
+      name: frontend-pod
+      labels:
+        app: frontend-pod
+    spec:
+      containers:
+        - name: frontend
+          image: gcr.io/{google-id}/frontend:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80

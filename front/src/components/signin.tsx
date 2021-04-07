@@ -1,15 +1,48 @@
+import {
+  Button,
+  Container,
+  Grid,
+  makeStyles,
+  TextField,
+  Divider,
+} from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import React, { useRef, useState } from "react";
-import { Alert, Button, Card, Form } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
-import { Hr, styledCard } from "./common";
-import styled from "styled-components";
 const googleIcon =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png";
+  "https://upload.wikimedia.org/wikipedia/commons/archive/5/53/20190925201609%21Google_%22G%22_Logo.svg";
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  form: {
+    marginTop: theme.spacing(3),
+  },
+  googleSignIn: {
+    backgroundColor: "#fff",
+    textTransform: "none",
+    "& img": { marginRight: theme.spacing(1) },
+  },
+  submit: {
+    margin: theme.spacing(2, 0, 2),
+    textTransform: "none",
+  },
+  signin: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}));
 
 export const SignIn = () => {
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const classes = useStyles();
+  const [email, setEmail] = useState<string>();
+  const [password, setPassword] = useState<string>();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, loginWithGoogle } = useAuth();
@@ -18,15 +51,16 @@ export const SignIn = () => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (emailRef.current && passwordRef.current) {
+    if (email && password) {
       try {
         setError("");
         setLoading(true);
-        await signIn(emailRef.current.value, passwordRef.current.value);
+        await signIn(email, password);
         setLoading(false);
         history.push("/");
       } catch {
         setError("Failed to log in");
+        setLoading(false);
       }
     }
   }
@@ -45,63 +79,71 @@ export const SignIn = () => {
     }
   }
 
-  const googleButton: React.CSSProperties = {
-    backgroundColor: "#FFF",
-    width: "100%",
-    color: "#000",
-    border: "1px solid #ced4da",
-  };
-
-  const GoogleSignInIcon = styled.img.attrs({
-    src: `${googleIcon}`,
-  })`
-    width: 25px;
-    float: left;
-  `;
-
   return (
-    <Card style={styledCard}>
-      <Card.Body>
-        <h3 className="mb-3 text-center font-weight-normal">Sign in</h3>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <Button
-          style={googleButton}
-          disabled={loading}
-          onClick={onLoginWithGoogle}
-        >
-          <GoogleSignInIcon />
-          Sign in with Google
-        </Button>
-        <Hr data-content="OR" />
-        <Form onSubmit={handleSubmit}>
-          <Form.Group id="email">
-            <Form.Control
-              type="email"
-              ref={emailRef}
-              placeholder="Email address"
-              required
-            />
-          </Form.Group>
-          <Form.Group id="password">
-            <Form.Control
-              type="password"
-              ref={passwordRef}
-              placeholder="Password"
-              required
-            />
-          </Form.Group>
-          <Button disabled={loading} className="w-100" type="submit">
+    <Container maxWidth="xs">
+      <div className={classes.paper}>
+        <form className={classes.form}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Button
+                onClick={onLoginWithGoogle}
+                disabled={loading}
+                fullWidth
+                variant="contained"
+                className={classes.googleSignIn}
+              >
+                <img src={googleIcon} width={25} height={25} />
+                Sign in with Google
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                value={email}
+                onChange={(e) => setEmail(e.currentTarget.value)}
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                value={password}
+                onChange={(e) => setPassword(e.currentTarget.value)}
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+            </Grid>
+          </Grid>
+          <Button
+            onClick={(e) => handleSubmit(e)}
+            disabled={loading}
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
             Sign In
           </Button>
-        </Form>
-        <div className="w-100 text-center mt-2">
-          <Link to="/forgot-password">Forgot Password ?</Link>
-        </div>
-        <Hr />
-        <div className="w-100 text-center mt-2">
-          Need an account? <Link to="/signup">Sign Up</Link>
-        </div>
-      </Card.Body>
-    </Card>
+          <Grid item xs={12}>
+            {error && <Alert severity="error">{error}</Alert>}
+          </Grid>
+          <Grid container justify="flex-end">
+            <Grid item>
+              <Link to="/signup">No account? Sign Up</Link>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
+    </Container>
   );
 };

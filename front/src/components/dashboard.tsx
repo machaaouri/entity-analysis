@@ -2,38 +2,42 @@ import { useAuth } from "../contexts/authContext";
 import { InputField } from "./inputField";
 import { NavBar } from "./navbar";
 import { api } from "../api";
-import { ServiceComponent, ServiceContainer } from "./services";
+import { ServiceComponent } from "./services";
 import {
   GoogleTextAnalyser,
   initGoogleTextAnalyser,
   ServiceType,
 } from "../types/types";
 import React, { useEffect, useRef, useState } from "react";
-import { makeStyles } from "@material-ui/core";
 import { AnalysisRenderer } from "./analysis";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
-const useStyles = makeStyles({
-  root: {
-    backgroundColor: "#f8f9fa",
-    height: "100vh",
-    "& > .alert": {
-      margin: 0,
-      padding: "",
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      padding: theme.spacing(0, 1),
+      backgroundColor: "#f8f9fa",
+      "& > .alert": {
+        margin: 0,
+        padding: "",
+      },
     },
-  },
-  container: {
-    padding: "10px 50px 10px 50px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  services: {
-    display: "flex",
-    justifyContent: "center",
-    flexWrap: "wrap",
-  },
-});
+    services: {
+      paddingTop: theme.spacing(1),
+      display: "flex",
+      justifyContent: "center",
+      gap: theme.spacing(1),
+      [theme.breakpoints.down(600)]: {
+        flexDirection: "column",
+        margin: 0,
+      },
+    },
+  })
+);
 
 export const Dashboard = () => {
+  const classes = useStyles();
   const { currentUser } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [state, setState] = useState<GoogleTextAnalyser>(
@@ -41,7 +45,6 @@ export const Dashboard = () => {
   );
   const [error, setError] = useState<string>();
   const [warning, setWarning] = useState<string>();
-  const classes = useStyles();
   const remote = api(currentUser);
   const onGoing = useRef(false);
 
@@ -109,53 +112,35 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className={classes.root}>
+    <div>
       <NavBar isAdmin={isAdmin} />
-      {error && <div className="alert alert-danger text-center">{error}</div>}
-      {warning && (
-        <div className="alert alert-warning text-center">{warning}</div>
-      )}
-      <div className={classes.container}>
+      {error && <Alert severity="error">{error}</Alert>}
+      {warning && <Alert severity="warning">{warning}</Alert>}
+      <div className={classes.root}>
         <InputField
           progress={getProgress()}
           analyze={(text) => analyze(text)}
         />
         <div className={classes.services}>
-          <ServiceContainer
-            service={
-              <ServiceComponent
-                services={state.services}
-                type="Compute"
-                title="VM"
-              />
-            }
+          <ServiceComponent
+            services={state.services}
+            type="Compute"
+            title="VM"
           />
-          <ServiceContainer
-            service={
-              <ServiceComponent
-                services={state.services}
-                type="PubSub_input"
-                title="Serverless"
-              />
-            }
+          <ServiceComponent
+            services={state.services}
+            type="PubSub_input"
+            title="Serverless"
           />
-          <ServiceContainer
-            service={
-              <ServiceComponent
-                services={state.services}
-                type="CloudFunction"
-                title="Serverless"
-              />
-            }
+          <ServiceComponent
+            services={state.services}
+            type="CloudFunction"
+            title="Serverless"
           />
-          <ServiceContainer
-            service={
-              <ServiceComponent
-                services={state.services}
-                type="Firestore"
-                title="NoSQL"
-              />
-            }
+          <ServiceComponent
+            services={state.services}
+            type="Firestore"
+            title="NoSQL"
           />
         </div>
         <AnalysisRenderer analysis={state.analysis} />
